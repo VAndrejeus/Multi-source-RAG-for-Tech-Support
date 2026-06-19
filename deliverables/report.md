@@ -177,3 +177,21 @@ The retrieval pipeline performs:
 Documentation sources receive the highest weighting because they represent official product information. Blog posts receive moderate weighting, while forum discussions receive lower weighting due to their community-generated nature.
 
 This retrieval strategy helps prioritize authoritative information while still allowing practical troubleshooting content from community discussions to be surfaced when relevant.
+
+## Reranking Strategy
+
+A lightweight reranking layer was implemented after vector retrieval.
+
+The reranker combines:
+
+- Vector similarity
+- Source authority weighting
+- Query keyword overlap
+
+This approach improves ranking quality while avoiding the computational cost of cross-encoder models.
+
+## Retrieval Filtering
+
+A minimum similarity threshold is applied before reranking.
+
+Chunks below the threshold are discarded to reduce retrieval noise and prevent unrelated content from influencing generated answers.
