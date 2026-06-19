@@ -38,6 +38,20 @@ During collection, some pages contained wiki navigation elements, localization c
 
 The collected documentation covers several common technical support topics, including installation, upgrades, scheduling, billing workflows, patient portal configuration, API integration, and security hardening. These topics provide a strong foundation for evaluating retrieval quality across realistic support questions.
 
+### PDF Documentation
+
+In addition to web-based documentation, two OpenEMR PDF user guides were downloaded and included as part of the documentation source.
+
+PDF files collected:
+
+- OpenEMR 4.1 Users Guide
+- OpenEMR 3.1 Users Guide
+
+PDF documentation will be processed with Docling so that structured document content can be extracted before chunking. This adds support for a different documentation format while keeping the source category consistent with the assignment requirement for product documentation.
+
+Docling was initially evaluated for PDF extraction, but the selected OpenEMR PDF manuals produced memory errors during preprocessing on the local environment. To keep the pipeline reliable and reproducible, PDF text extraction was implemented with pypdf instead. PDF content was still normalized into the same documentation schema before chunking.
+
+
 ## Blog Collection
 
 The second knowledge source consisted of OpenEMR technical blog posts. Blog articles were collected directly from the OpenEMR blog and stored as structured JSON documents.
