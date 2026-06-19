@@ -1,0 +1,10 @@
+{
+  "source_type": "forum",
+  "document_type": "discourse_thread",
+  "title": "Dashboard demographics edits not saving",
+  "url": "https://community.open-emr.org/t/26837.json",
+  "category_id": 6,
+  "created_at": "2026-06-12T18:29:34.517Z",
+  "question": "After I create a new patient, the name is not appearing in finder or on the patient banner. From the dashboard demographics widget, the patient name does not show up. I can edit and add the name, but only the first name is sticking. This has to be related to layouts form, but I don’t know what setting I am missing. Can anyone help?",
+  "replies": []
+}

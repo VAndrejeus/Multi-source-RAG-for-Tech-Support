@@ -1,0 +1,31 @@
+{
+  "source_type": "forum",
+  "document_type": "discourse_thread",
+  "title": "Small change in code to switch on/off pacient ability to schedule own appointments on portal",
+  "url": "https://community.open-emr.org/t/15455.json",
+  "category_id": 7,
+  "created_at": "2020-11-08T17:18:28.024Z",
+  "question": "Hi, I just downloaded and installed OPEN-EMR, I was looking for a EMR for my wife who runs a Psychological clinic and is burried on paper. Very impressed on all the features it has, but the wife wanted to give access to patients to check their appointments on the portal, not giving them the possibility to schedule their own appointments… So to begin with just added a config file and modified code on the portal, but ended up doing the full change to make that a setting that can be handled on global settings. so first I added a record on globals table: insert into globals (gl_name,gl_index,gl_value) values (‘allow_patient_create_appointments’,0,1) then changed globals.inc.php (under library folder) to recognize the new parameter. Sorry can’t upload files because I’m a new user I’ll update this post later with the files. and finally changed home.php under portal to read the new global parameter. now with this changes you can go to Administration -> Globals -> Portal, and find a new option to Allow patient to Schedule Appointments, and in patient portal it that option is set off there will be no ‘Schedule New Appointment’ button Hope it helps someone, if you need the code before I can upload files, you can send me a PM and I’ll send it to you. Regards Osvaldo",
+  "replies": [
+    {
+      "author": "madmax",
+      "content": "@sjpadgett I think we should get the code and a PR to github for this?",
+      "created_at": "2020-11-09T15:38:46.716Z"
+    },
+    {
+      "author": "ovargaspcr",
+      "content": "Sure, I’m still unable to upload files, so just tell me how can I send you the code. Regards Osvaldo",
+      "created_at": "2020-11-09T17:16:37.155Z"
+    },
+    {
+      "author": "Strabmd",
+      "content": "I would love to see this added. I am using v. 8.0.0 and currently do not see this option in Admin-config-portal. I only have “Allow Online Appointments” but I would like the ability for patients to see appointments in the patient portal and a separate admin ability to turn on/off “schedule new appointment.” I am in the same situation where I would like patients to be able to see their upcoming and past appointments but do not want them to be able to schedule an appointment. I’m not sure where this ended up after this discussion in 2020. I hope someone will be able to get this in the next patch/release.",
+      "created_at": "2026-06-12T20:20:14.251Z"
+    },
+    {
+      "author": "sjpadgett",
+      "content": "I have a PR up now and I’ll see if I can get this done for you guys. A good suggestion and never thought about in view only term. It’d be in upcoming 8.1.0 release if I get to it.",
+      "created_at": "2026-06-12T20:39:59.824Z"
+    }
+  ]
+}

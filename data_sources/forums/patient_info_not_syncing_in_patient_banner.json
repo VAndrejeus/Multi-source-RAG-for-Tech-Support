@@ -1,0 +1,10 @@
+{
+  "source_type": "forum",
+  "document_type": "discourse_thread",
+  "title": "Patient info not syncing in Patient Banner",
+  "url": "https://community.open-emr.org/t/26836.json",
+  "category_id": 6,
+  "created_at": "2026-06-12T13:01:23.800Z",
+  "question": "using version 7.0.2 I am now able to create a new patient again, but none of the patient info is appearing in the patient banner at the top of the page. How do I sync this info?",
+  "replies": []
+}

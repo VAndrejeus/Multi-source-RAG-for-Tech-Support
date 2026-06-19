@@ -1,0 +1,10 @@
+{
+  "source_type": "forum",
+  "document_type": "discourse_thread",
+  "title": "OpenEMR Admin Meeting Notes - 2026-06-16",
+  "url": "https://community.open-emr.org/t/26845.json",
+  "category_id": 7,
+  "created_at": "2026-06-17T00:20:25.319Z",
+  "question": "Highlight: Demo from Jordan of DAW Systems covering their eRX tooling. Anyone looking for additional demos, follow-ups, etc, should reach out to him directly: jordan.hilsher@dawsystems.com The demo went a bit long so we didn’t get to the other agenda items from last week, though there was an informal discussion about strategies around coding with AI tools and some of the security implications of them. We also discussed some priorities around FHIR APIs and tooling to make it easier to consume them for future features. We may have a guest from Stripe next week; Margaret to coordinate. Release meeting tomorrow per usual, where we may also cover some Docker and CCDA content if time permits. I’ll update the thread if there’s anything relevant.",
+  "replies": []
+}
