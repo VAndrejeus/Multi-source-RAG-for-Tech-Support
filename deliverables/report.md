@@ -81,3 +81,99 @@ Each forum thread was stored as a structured JSON document containing:
 Forum discussions provide a valuable source of real-world troubleshooting information that is often not available in official documentation. They also introduce the possibility of conflicting information, making forum content useful for evaluating source prioritization and contradiction handling within the retrieval pipeline.
 
 Forum content is treated as a lower-authority source than official documentation but remains valuable for answering practical support questions and identifying common user issues.
+
+## PDF Processing
+
+Two OpenEMR PDF user guides were incorporated into the documentation source.
+
+Initially, Docling was evaluated for PDF extraction. However, the selected OpenEMR manuals generated preprocessing and memory-related issues in the local environment. To ensure a reliable and reproducible pipeline, PDF text extraction was implemented using pypdf.
+
+Extracted PDF content was normalized into the same schema used by the other documentation sources before chunking.
+
+---
+
+## Semantic Chunking Strategy
+
+Different chunking strategies were applied based on the structure of each knowledge source.
+
+### Documentation
+
+Documentation content was chunked using a semantic paragraph-grouping strategy. Paragraph embeddings were generated using the Sentence Transformers model `all-MiniLM-L6-v2`. Consecutive paragraphs were compared using cosine similarity, and new chunks were created when semantic similarity dropped below a configured threshold or when a chunk exceeded the maximum target size.
+
+Configuration:
+
+- Maximum chunk size: 500 words
+- Minimum chunk size: 120 words
+- Similarity threshold: 0.45
+
+### Blogs
+
+Blog content used the same semantic chunking approach but with larger chunk sizes to preserve article context.
+
+Configuration:
+
+- Maximum chunk size: 600 words
+- Minimum chunk size: 150 words
+- Similarity threshold: 0.42
+
+### Forums
+
+Forum discussions were chunked using a thread-aware strategy.
+
+- Original user questions were stored as individual chunks.
+- Each forum reply was stored as a separate chunk.
+- Very short replies were excluded.
+
+This approach preserves the natural structure of troubleshooting conversations and support discussions.
+
+### Chunking Results
+
+| Source | Chunks |
+|----------|----------:|
+| Documentation | 58 |
+| Blogs | 22 |
+| Forums | 51 |
+| Total | 131 |
+
+---
+
+## Embedding and Vector Storage
+
+All chunks were embedded using the Sentence Transformers model:
+
+`all-MiniLM-L6-v2`
+
+The resulting embeddings were stored in a persistent ChromaDB vector database.
+
+Each stored chunk includes:
+
+- Chunk text
+- Source type
+- Document title
+- Source URL
+- Authority score
+
+Authority scores were assigned to support source prioritization during retrieval:
+
+| Source | Authority Score |
+|----------|----------:|
+| Documentation | 3 |
+| Blog | 2 |
+| Forum | 1 |
+
+---
+
+## Retrieval Strategy
+
+User questions are embedded using the same embedding model used during ingestion.
+
+The retrieval pipeline performs:
+
+1. Query embedding generation
+2. Vector similarity search in ChromaDB
+3. Retrieval of top candidate chunks
+4. Source-aware score adjustment using authority weights
+
+Documentation sources receive the highest weighting because they represent official product information. Blog posts receive moderate weighting, while forum discussions receive lower weighting due to their community-generated nature.
+
+This retrieval strategy helps prioritize authoritative information while still allowing practical troubleshooting content from community discussions to be surfaced when relevant.

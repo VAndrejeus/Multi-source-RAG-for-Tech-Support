@@ -1,8 +1,12 @@
 import chromadb
+from reranker import rerank
 from sentence_transformers import SentenceTransformer
 
 #Where ChromaDB is stored
 CHROMA_DIR = "chroma_db"
+
+#Minimum similarity score
+MIN_SIMILARITY = 0
 
 #Same model used during ingestion
 model = SentenceTransformer("all-MiniLM-L6-v2")
@@ -15,7 +19,7 @@ SOURCE_WEIGHT = {
 }
 
 
-def retrieve(query, top_k=8):
+def retrieve(query, top_k=15):
 
     client = chromadb.PersistentClient(
         path=CHROMA_DIR
@@ -45,6 +49,10 @@ def retrieve(query, top_k=8):
         #Chroma distance is lower when closer, so convert it
         similarity_score = 1 - distance
 
+        #Drop obviously irrelevant chunks
+        if similarity_score < MIN_SIMILARITY:
+            continue
+
         source_type = metadata.get("source_type", "")
         weighted_score = similarity_score + SOURCE_WEIGHT.get(source_type, 0)
 
@@ -64,7 +72,12 @@ def retrieve(query, top_k=8):
         reverse=True
     )
 
-    return retrieved
+    reranked_results = rerank(
+        query,
+        retrieved
+    )
+
+    return reranked_results
 
 
 def main():
@@ -75,7 +88,7 @@ def main():
 
     print("\nTop Results:\n")
 
-    for i, result in enumerate(results, start=1):
+    for i, result in enumerate(results[:8], start=1):
 
         print("=" * 80)
         print(f"Rank: {i}")
@@ -83,6 +96,8 @@ def main():
         print(f"Title: {result['title']}")
         print(f"Similarity: {result['similarity_score']:.4f}")
         print(f"Weighted Score: {result['weighted_score']:.4f}")
+        print(f"Keyword Score: {result['keyword_score']:.4f}")
+        print(f"Rerank Score: {result['rerank_score']:.4f}")
         print(f"URL: {result['url']}")
         print("-" * 80)
         print(result["text"][:700])
