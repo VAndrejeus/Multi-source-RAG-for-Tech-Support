@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-
+from logger import log_query
 import ollama
 
 #Allow imports from scripts folder
@@ -73,7 +73,8 @@ def generate_answer(question):
     )
 
     answer = response["message"]["content"]
-
+    #Log question, answer and the source
+    log_query(question, answer, selected_sources)
     return answer, selected_sources
 
 
