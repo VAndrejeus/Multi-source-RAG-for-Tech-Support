@@ -148,7 +148,6 @@ def chunk_documentation():
                 "title": document.get("title", ""),
                 "url": document.get("url", ""),
                 "chunk_number": chunk_number,
-                "authority_score": 3,
                 "chunk_text": chunk_text,
             })
 
@@ -183,7 +182,6 @@ def chunk_blogs():
                 "title": document.get("title", ""),
                 "url": document.get("url", ""),
                 "chunk_number": chunk_number,
-                "authority_score": 2,
                 "chunk_text": chunk_text,
             })
 
@@ -216,7 +214,6 @@ def chunk_forums():
                 "title": title,
                 "url": url,
                 "chunk_type": "question",
-                "authority_score": 1,
                 "chunk_text": question,
             })
         #Keep forum replies as separate retrieval units

@@ -2,7 +2,7 @@ import re
 
 
 #Additional weighting applied after vector retrieval
-SOURCE_BONUS = {
+SOURCE_AUTHORITY_BONUS = {
     "documentation": 0.15,
     "blog": 0.08,
     "forum": 0.03,
@@ -41,7 +41,7 @@ def rerank(query, retrieved_results):
             result["text"]
         )
 
-        source_bonus = SOURCE_BONUS.get(
+        source_bonus = SOURCE_AUTHORITY_BONUS.get(
             result["source_type"],
             0
         )

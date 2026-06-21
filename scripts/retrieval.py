@@ -11,13 +11,6 @@ MIN_SIMILARITY = 0
 #Same model used during ingestion
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
-#Docs should carry more weight than blogs/forums, these are made up numbers anyway
-SOURCE_WEIGHT = {
-    "documentation": 0.15,
-    "blog": 0.08,
-    "forum": 0.03,
-}
-
 
 def retrieve(query, top_k=15):
 
@@ -54,7 +47,7 @@ def retrieve(query, top_k=15):
             continue
 
         source_type = metadata.get("source_type", "")
-        weighted_score = similarity_score + SOURCE_WEIGHT.get(source_type, 0)
+        weighted_score = similarity_score
 
         retrieved.append({
             "chunk_id": results["ids"][0][i],

@@ -235,7 +235,6 @@ Stored metadata includes:
 * Source type
 * Document title
 * Source URL
-* Authority score
 * Chunk text
 
 Chunks Indexed: **131**
@@ -295,15 +294,15 @@ To prevent context-window overflow, retrieved chunks are truncated before being 
 
 ## Source Authority Ranking
 
-To improve answer reliability, sources are assigned authority scores:
+To improve answer reliability, source-specific weighting bonuses are applied during reranking.
 
-| Source        | Authority Score |
-| ------------- | --------------: |
-| Documentation |               3 |
-| Blog          |               2 |
-| Forum         |               1 |
+| Source | Reranking Bonus |
+|---------|---------:|
+| Documentation | 0.15 |
+| Blog | 0.08 |
+| Forum | 0.03 |
 
-Higher-authority sources receive additional weighting during retrieval and reranking.
+These values are intentionally small so that semantic similarity remains the primary ranking signal while still favoring more authoritative sources.
 
 ---
 
@@ -311,7 +310,7 @@ Higher-authority sources receive additional weighting during retrieval and reran
 
 Information retrieved from documentation, blogs, and forums may occasionally contain conflicting guidance.
 
-The system handles contradictions through source authority ranking. Higher-authority sources receive additional weight during retrieval and reranking, ensuring that official documentation is preferred when multiple sources discuss the same topic.
+The system handles potential contradictions through source-aware reranking and source prioritization. Documentation receives the highest weighting, followed by blogs and forums.
 
 When multiple source types contribute to an answer, the system informs the user that source prioritization was applied.
 

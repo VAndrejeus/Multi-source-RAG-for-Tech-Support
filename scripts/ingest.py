@@ -68,7 +68,6 @@ def main():
             "document_type": chunk.get("document_type", ""),
             "title": chunk.get("title", ""),
             "url": chunk.get("url", ""),
-            "authority_score": chunk.get("authority_score", 1),
         })
 
     print("Creating embeddings...")
