@@ -7,6 +7,7 @@ import ollama
 sys.path.append(str(Path(__file__).parent))
 
 from retrieval import retrieve
+from contradiction_handler import analyze_source_mix, build_contradiction_note
 
 #Using Gemma 2:9b here as I alway do, most reliable and good enough for most things
 OLLAMA_MODEL = "gemma2:9b"
@@ -59,7 +60,8 @@ def generate_answer(question):
     results = retrieve(question)
 
     context, selected_sources = build_context(results)
-
+    #Check if there is a conflict between sources
+    conflict_info = analyze_source_mix(selected_sources)
     prompt = build_prompt(question, context)
 
     response = ollama.chat(
@@ -73,6 +75,7 @@ def generate_answer(question):
     )
 
     answer = response["message"]["content"]
+    answer += build_contradiction_note(conflict_info)
     #Log question, answer and the source
     log_query(question, answer, selected_sources)
     return answer, selected_sources
