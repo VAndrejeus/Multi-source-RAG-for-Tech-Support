@@ -195,3 +195,92 @@ This approach improves ranking quality while avoiding the computational cost of 
 A minimum similarity threshold is applied before reranking.
 
 Chunks below the threshold are discarded to reduce retrieval noise and prevent unrelated content from influencing generated answers.
+
+## Answer Generation
+
+Retrieved chunks are combined into a context window and supplied to a local large language model for answer generation.
+
+Gemma 2 9B running through Ollama was selected as the generation model. The model receives the user's question together with the highest-ranked retrieved chunks.
+
+The prompt instructs the model to:
+
+* Answer using only retrieved context
+* Avoid introducing unsupported information
+* Acknowledge when sufficient information is unavailable
+* Prefer higher-authority sources when multiple sources are retrieved
+
+This grounding approach reduces hallucinations and ensures that responses remain tied to the collected OpenEMR knowledge base.
+
+---
+
+## Query Logging
+
+A logging mechanism was implemented to record system activity and support evaluation.
+
+For each query, the system stores:
+
+* Timestamp
+* User question
+* Generated answer
+* Sources used during retrieval
+
+Logs are stored in JSONL format, allowing efficient append-only storage and future analysis of retrieval behavior and source utilization.
+
+Logging provides transparency into system decisions and supports debugging and performance evaluation.
+
+---
+
+## Contradiction Handling
+
+Information retrieved from documentation, blogs, and community forums may occasionally contain conflicting guidance.
+
+To address this challenge, the system incorporates source authority ranking. Documentation sources are assigned the highest authority score, followed by blogs and forum discussions.
+
+When multiple source types are retrieved, the answer generation process prioritizes information from higher-authority sources. The system also provides a source-priority notice indicating that source authority was considered during answer generation.
+
+This approach provides a practical mechanism for handling contradictions while maintaining transparency regarding how conflicting information is resolved.
+
+---
+
+## End-to-End Retrieval-Augmented Generation Pipeline
+
+The complete system consists of the following stages:
+
+1. Multi-source data collection
+2. PDF processing and normalization
+3. Semantic chunking
+4. Embedding generation
+5. ChromaDB vector storage
+6. Similarity-based retrieval
+7. Source-aware reranking
+8. Contradiction handling
+9. Answer generation using Gemma 2
+10. Query logging
+
+The resulting pipeline allows users to submit technical support questions and receive grounded responses generated from documentation, blog posts, and community forum discussions.
+
+
+## Current Dataset Statistics
+
+| Metric               | Value |
+| -------------------- | ----: |
+| Documentation Pages  |     7 |
+| PDF Manuals          |     2 |
+| Blog Articles        |    10 |
+| Forum Threads        |    15 |
+| Total Chunks         |   131 |
+| Documentation Chunks |    58 |
+| Blog Chunks          |    22 |
+| Forum Chunks         |    51 |
+
+## Technologies Used
+
+* Python
+* Requests
+* BeautifulSoup
+* pypdf
+* Sentence Transformers
+* ChromaDB
+* Ollama
+* Gemma 2 9B
+* JSON / JSONL

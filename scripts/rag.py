@@ -13,7 +13,7 @@ from contradiction_handler import analyze_source_mix, build_contradiction_note
 OLLAMA_MODEL = "gemma2:9b"
 
 
-def build_context(results, max_chunks=5):
+def build_context(results, max_chunks=3, max_chars_per_chunk=1200):
 
     #Only send the best chunks to the LLM
     selected = results[:max_chunks]
@@ -28,7 +28,7 @@ Title: {result["title"]}
 Source Type: {result["source_type"]}
 URL: {result["url"]}
 
-{result["text"]}
+{result["text"][:max_chars_per_chunk]}
 """
         context_blocks.append(block)
 
@@ -51,6 +51,9 @@ Retrieved Context:
 User Question:
 {question}
 
+Write a complete answer in 1 to 4 sentences.
+If the retrieved context is insufficient, explain what information is missing.
+Do not answer with only one word.
 Answer:
 """
 
@@ -71,7 +74,13 @@ def generate_answer(question):
                 "role": "user",
                 "content": prompt
             }
-        ]
+        ],
+        options={
+            "temperature": 0.2, #Mostly deterministic randomness
+            "num_predict": 500, #Max token nmber
+            "top_p": 0.9 #Up to 90% of the most likely words
+
+        }
     )
 
     answer = response["message"]["content"]
