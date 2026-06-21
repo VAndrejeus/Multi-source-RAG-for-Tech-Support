@@ -16,7 +16,7 @@ This enables realistic technical support question answering using publicly avail
 
 Documentation data is collected from the OpenEMR Wiki and OpenEMR PDF manuals.
 
-Web documentation is extracted using BeautifulSoup, while PDF documentation is processed using Docling.
+Web documentation is extracted using BeautifulSoup, while PDF documentation is processed using pypdf.
 
 ## Documentation Collection
 
@@ -47,8 +47,6 @@ PDF files collected:
 - OpenEMR 4.1 Users Guide
 - OpenEMR 3.1 Users Guide
 
-PDF documentation will be processed with Docling so that structured document content can be extracted before chunking. This adds support for a different documentation format while keeping the source category consistent with the assignment requirement for product documentation.
-
 Docling was initially evaluated for PDF extraction, but the selected OpenEMR PDF manuals produced memory errors during preprocessing on the local environment. To keep the pipeline reliable and reproducible, PDF text extraction was implemented with pypdf instead. PDF content was still normalized into the same documentation schema before chunking.
 
 
@@ -60,7 +58,7 @@ A total of ten blog articles were collected covering product releases, certifica
 
 Unlike documentation pages, blog articles tend to provide higher-level explanations, implementation context, release information, and community perspectives. This makes them useful for answering questions where official documentation may not provide sufficient background information.
 
-Blog content was extracted primarily from article paragraph elements and stored with source metadata including title, URL, and source type. The blog source serves as a secondary authority behind official documentation when answering user questions.
+Blog content was extracted primarily from article paragraph elements and stored with source metadata including title, URL, and source type. The blog source serves as a secondary information source behind official documentation when answering user questions.
 
 ## Forum Collection
 
@@ -68,7 +66,7 @@ The third knowledge source consisted of community forum discussions collected fr
 
 The OpenEMR community forum uses the Discourse platform, which provides structured JSON endpoints for retrieving discussion topics and replies. Rather than scraping HTML pages, forum data was collected directly from the Discourse JSON API. This approach simplified data extraction and preserved thread structure.
 
-A total of fifteen forum threads were collected covering technical support issues, configuration questions, feature requests, troubleshooting discussions, user workflow concerns, and community development topics.
+A total of ten forum threads were collected covering technical support issues, configuration questions, feature requests, troubleshooting discussions, user workflow concerns, and community development topics.
 
 Each forum thread was stored as a structured JSON document containing:
 
@@ -80,7 +78,7 @@ Each forum thread was stored as a structured JSON document containing:
 
 Forum discussions provide a valuable source of real-world troubleshooting information that is often not available in official documentation. They also introduce the possibility of conflicting information, making forum content useful for evaluating source prioritization and contradiction handling within the retrieval pipeline.
 
-Forum content is treated as a lower-authority source than official documentation but remains valuable for answering practical support questions and identifying common user issues.
+Forum content is treated as a lower-priority source than official documentation but remains valuable for answering practical support questions and identifying common user issues.
 
 ## PDF Processing
 
@@ -151,15 +149,18 @@ Each stored chunk includes:
 - Source type
 - Document title
 - Source URL
-- Authority score
 
-Authority scores were assigned to support source prioritization during retrieval:
+### Source-Aware Reranking
 
-| Source | Authority Score |
+To improve answer quality, source-specific weighting bonuses are applied during reranking.
+
+| Source | Bonus |
 |----------|----------:|
-| Documentation | 3 |
-| Blog | 2 |
-| Forum | 1 |
+| Documentation | 0.15 |
+| Blog | 0.08 |
+| Forum | 0.03 |
+
+These values are intentionally small so that semantic similarity remains the primary retrieval signal while still favoring official documentation over blogs and forums.
 
 ---
 
@@ -172,11 +173,11 @@ The retrieval pipeline performs:
 1. Query embedding generation
 2. Vector similarity search in ChromaDB
 3. Retrieval of top candidate chunks
-4. Source-aware score adjustment using authority weights
+4. Source-aware score adjustment using source weighting bonuses
 
-Documentation sources receive the highest weighting because they represent official product information. Blog posts receive moderate weighting, while forum discussions receive lower weighting due to their community-generated nature.
+Documentation receives the highest source bonus, followed by blogs and forums. Blog posts receive moderate weighting, while forum discussions receive lower weighting due to their community-generated nature.
 
-This retrieval strategy helps prioritize authoritative information while still allowing practical troubleshooting content from community discussions to be surfaced when relevant.
+This retrieval strategy helps prioritize official documentation while still allowing practical troubleshooting content from community discussions to be surfaced when relevant.
 
 ## Reranking Strategy
 
@@ -185,7 +186,7 @@ A lightweight reranking layer was implemented after vector retrieval.
 The reranker combines:
 
 - Vector similarity
-- Source authority weighting
+- Source weighting bonuses
 - Query keyword overlap
 
 This approach improves ranking quality while avoiding the computational cost of cross-encoder models.
@@ -207,7 +208,7 @@ The prompt instructs the model to:
 * Answer using only retrieved context
 * Avoid introducing unsupported information
 * Acknowledge when sufficient information is unavailable
-* Prefer higher-authority sources when multiple sources are retrieved
+* Prefer documentation over blogs and forums when multiple source types are retrieved.
 
 This grounding approach reduces hallucinations and ensures that responses remain tied to the collected OpenEMR knowledge base.
 
@@ -234,11 +235,11 @@ Logging provides transparency into system decisions and supports debugging and p
 
 Information retrieved from documentation, blogs, and community forums may occasionally contain conflicting guidance.
 
-To address this challenge, the system incorporates source authority ranking. Documentation sources are assigned the highest authority score, followed by blogs and forum discussions.
+The system addresses potential contradictions through source-aware reranking and source prioritization. Documentation receives the highest weighting, followed by blogs and forums.
 
-When multiple source types are retrieved, the answer generation process prioritizes information from higher-authority sources. The system also provides a source-priority notice indicating that source authority was considered during answer generation.
+When multiple source types are retrieved, higher-ranked sources are more likely to influence the final answer. The system also displays a source-priority notice when multiple source types contribute to the generated response.
 
-This approach provides a practical mechanism for handling contradictions while maintaining transparency regarding how conflicting information is resolved.
+This provides a simple and transparent mechanism for handling conflicting information without introducing additional fact-verification models.
 
 ---
 ## Context Window Management
@@ -274,7 +275,7 @@ The resulting pipeline allows users to submit technical support questions and re
 | Documentation Pages  |     7 |
 | PDF Manuals          |     2 |
 | Blog Articles        |    10 |
-| Forum Threads        |    15 |
+| Forum Threads        |    10 |
 | Total Chunks         |   131 |
 | Documentation Chunks |    58 |
 | Blog Chunks          |    22 |
@@ -292,6 +293,9 @@ The resulting pipeline allows users to submit technical support questions and re
 * Gemma 2 9B
 * JSON / JSONL
 
-## Evaluation
 
-Evaluation results are presented in the accompanying example_queries.md and performance_analysis.md documents.
+## Evaluation Summary
+
+The system was evaluated using ten OpenEMR technical support questions spanning documentation, PDF manuals, blog articles, and community forum discussions.
+
+The strongest results came from documentation and PDF-based questions because those sources contained detailed procedural information. Blog retrieval performed well for release and certification questions. Forum retrieval was more limited due to the smaller number of collected discussion threads but still provided useful troubleshooting information when relevant content was available.
