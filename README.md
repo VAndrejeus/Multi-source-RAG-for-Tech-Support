@@ -290,6 +290,7 @@ The retrieval pipeline performs:
 5. Context construction
 6. LLM answer generation
 
+To prevent context-window overflow, retrieved chunks are truncated before being sent to the language model. This ensures sufficient space remains for answer generation.
 ---
 
 ## Source Authority Ranking
