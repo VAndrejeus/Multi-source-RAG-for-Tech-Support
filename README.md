@@ -428,26 +428,12 @@ Once the vector database has been created, only the following command is require
 ```bash
 python scripts/rag.py
 ```
-## Example Query
+## Evaluation
 
-Ask an OpenEMR support question: How do I enable the patient portal?
+Example queries and system responses can be found in:
 
-Answer:
-
-To turn the Native Patient Portal on, toggle on Administration->Globals->Portal->Enable Patient Portal. 
-
-Set the portal web address at Administration->Globals->Portal->'Version 2 Onsite Patient Portal Site Address'.  
-
-
-Remember that if you have multi-site configured for OpenEMR, then need to use the following link to ensure the patient goes to the correct site: https://your_web_site.com/openemr/patients/index.php?site=default (where the default is substituted with the site directory)
-
-
-
-
-Sources Used:
-
-- documentation | Patient Portal | https://www.open-emr.org/wiki/index.php/Patient_Portal
----
+- deliverables/example_queries.md
+- deliverables/performance_analysis.md
 
 ## Project Structure
 

@@ -192,9 +192,9 @@ This approach improves ranking quality while avoiding the computational cost of 
 
 ## Retrieval Filtering
 
-A minimum similarity threshold is applied before reranking.
+A minimum similarity threshold was applied before reranking. Chunks below the threshold were discarded to reduce retrieval noise and prevent unrelated content from influencing answer generation.
 
-Chunks below the threshold are discarded to reduce retrieval noise and prevent unrelated content from influencing generated answers.
+During testing, this filtering step improved retrieval quality by removing low-relevance results that occasionally appeared in the top-k retrieval set.
 
 ## Answer Generation
 
@@ -241,6 +241,13 @@ When multiple source types are retrieved, the answer generation process prioriti
 This approach provides a practical mechanism for handling contradictions while maintaining transparency regarding how conflicting information is resolved.
 
 ---
+## Context Window Management
+
+Initial testing revealed that sending too many retrieved chunks to the language model could exceed the available context window. When this occurred, the model was unable to generate complete answers because most of the context capacity was consumed by retrieved documents.
+
+To address this issue, the system limits the number of retrieved chunks sent to the language model and truncates long chunks before prompt construction. This ensures sufficient space remains for answer generation while still providing relevant supporting context.
+
+This modification significantly improved answer quality and prevented incomplete responses.
 
 ## End-to-End Retrieval-Augmented Generation Pipeline
 
@@ -284,3 +291,7 @@ The resulting pipeline allows users to submit technical support questions and re
 * Ollama
 * Gemma 2 9B
 * JSON / JSONL
+
+## Evaluation
+
+Evaluation results are presented in the accompanying example_queries.md and performance_analysis.md documents.
