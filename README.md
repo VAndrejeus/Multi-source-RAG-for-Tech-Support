@@ -174,7 +174,7 @@ Output:
 data_sources/forums/
 ```
 
-Forum Threads Collected: **15**
+Forum Threads Collected: **10**
 
 ---
 
@@ -355,7 +355,7 @@ The final knowledge base contains:
 | Documentation Pages | 7 |
 | PDF Manuals | 2 |
 | Blog Articles | 10 |
-| Forum Threads | 15 |
+| Forum Threads | 10 |
 | Total Chunks | 131 |
 
 The system successfully retrieves information from multiple source types and generates grounded answers using Gemma 2 9B. Retrieved sources are displayed alongside generated answers to improve transparency and traceability.
