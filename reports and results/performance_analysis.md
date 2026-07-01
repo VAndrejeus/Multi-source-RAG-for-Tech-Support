@@ -86,6 +86,7 @@ Forums were the least consistent source. Some threads contained very useful trou
 
 I also noticed occasional retrieval noise where a forum chunk would appear in results even though it was not directly related to the question.
 
+
 Another issue I encountered during development was context window overflow. Initially I was sending too many retrieved chunks to Gemma which caused the model to stop generating after a single word. Limiting the number of chunks and truncating long chunks fixed the issue.
 
 ---

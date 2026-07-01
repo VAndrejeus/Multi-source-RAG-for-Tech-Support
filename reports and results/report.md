@@ -186,6 +186,9 @@ A lightweight reranking layer was implemented after vector retrieval.
 The reranker combines:
 
 - Vector similarity
+
+
+
 - Source weighting bonuses
 - Query keyword overlap
 
